@@ -1,3 +1,5 @@
+from __future__ import annotations
+
 from .basic import *  # noqa: F401,F403
 from .named import *  # noqa: F401,F403
 from .struct import *  # noqa: F401,F403
@@ -12,4 +14,4 @@ def deserialize(data, schema):
 
 
 def serialize(data, schema):
-    return b''.join(t(v).serialize() for t, v in zip(schema, data))
+    return b"".join(t(v).serialize() for t, v in zip(schema, data))

@@ -1,10 +1,11 @@
-import enum
+from __future__ import annotations
 
+import zigpy.types as t
 
 PROFILE_ID = 49246
 
 
-class DeviceType(enum.IntEnum):
+class DeviceType(t.enum16):
     ON_OFF_LIGHT = 0x0000
     ON_OFF_PLUGIN_UNIT = 0x0010
     DIMMABLE_LIGHT = 0x0100
@@ -27,9 +28,14 @@ CLUSTERS = {
     DeviceType.DIMMABLE_LIGHT: ([0x0004, 0x0005, 0x0006, 0x0008, 0x1000], []),
     DeviceType.DIMMABLE_PLUGIN_UNIT: ([0x0004, 0x0005, 0x0006, 0x0008, 0x1000], []),
     DeviceType.COLOR_LIGHT: ([0x0004, 0x0005, 0x0006, 0x0008, 0x0300, 0x1000], []),
-    DeviceType.EXTENDED_COLOR_LIGHT: ([0x0004, 0x0005, 0x0006, 0x0008, 0x0300, 0x1000], []),
-    DeviceType.COLOR_TEMPERATURE_LIGHT: ([0x0004, 0x0005, 0x0006, 0x0008, 0x0300, 0x1000], []),
-
+    DeviceType.EXTENDED_COLOR_LIGHT: (
+        [0x0004, 0x0005, 0x0006, 0x0008, 0x0300, 0x1000],
+        [],
+    ),
+    DeviceType.COLOR_TEMPERATURE_LIGHT: (
+        [0x0004, 0x0005, 0x0006, 0x0008, 0x0300, 0x1000],
+        [],
+    ),
     DeviceType.COLOR_CONTROLLER: ([], [0x0004, 0x0006, 0x0008, 0x0300]),
     DeviceType.COLOR_SCENE_CONTROLLER: ([], [0x0004, 0x0005, 0x0006, 0x0008, 0x0300]),
     DeviceType.CONTROLLER: ([], [0x0004, 0x0006, 0x0008]),

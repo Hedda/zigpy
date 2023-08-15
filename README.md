@@ -1,27 +1,71 @@
 # zigpy
 
-[![Build Status](https://travis-ci.org/zigpy/zigpy.svg?branch=master)](https://travis-ci.org/zigpy/zigpy)
-[![Coverage](https://coveralls.io/repos/github/zigpy/zigpy/badge.svg?branch=master)](https://coveralls.io/github/zigpy/zigpy?branch=master)
+[![Build](https://github.com/zigpy/zigpy/workflows/CI/badge.svg?branch=dev)](https://github.com/zigpy/zigpy/workflows/CI/badge.svg?branch=dev)
+[![Coverage Status](https://codecov.io/gh/zigpy/zigpy/branch/dev/graph/badge.svg)](https://codecov.io/gh/zigpy/zigpy)
 
-**[zigpy](https://github.com/zigpy/zigpy)** is **[Zigbee protocol stack](https://en.wikipedia.org/wiki/Zigbee)** integration project to implement the **[Zigbee Home Automation](https://www.zigbee.org/)** standard as a Python 3 library. 
+**[zigpy](https://github.com/zigpy/zigpy)** is a hardware independent **[Zigbee protocol stack](https://en.wikipedia.org/wiki/Zigbee)** integration project to implement **[Zigbee](https://www.zigbee.org/)** standard specifications as a Python 3 library. 
 
-Zigbee Home Automation integration with zigpy allows you to connect one of many off-the-shelf Zigbee adapters using one of the available Zigbee radio library modules compatible with zigpy to control Zigbee based devices. There is currently support for controlling Zigbee device types such as binary sensors (e.g., motion and door sensors), sensors (e.g., temperature sensors), lightbulbs, switches, and fans. A working implementation of zigbe exist in **[Home Assistant](https://www.home-assistant.io)** (Python based open source home automation software) as part of its **[ZHA component](https://www.home-assistant.io/components/zha/)**
+Zigbee integration via zigpy allows you to connect one of many off-the-shelf Zigbee Coordinator adapters using one of the available Zigbee radio library modules compatible with zigpy to control Zigbee based devices. There is currently support for controlling Zigbee device types such as binary sensors (e.g., motion and door sensors), sensors (e.g., temperature sensors), lights, switches, buttons, covers, fans, climate control equipment, locks, and intruder alarm system devices. Note that Zigbee Green Power devices [currently are unsupported](https://github.com/zigpy/zigpy/issues/341).
 
-zigpy works with separate radio libraries which can each interface with multiple USB and GPIO radio adapters/modules over different native UART serial protocols. Such radio libraries includes **[bellows](https://github.com/zigpy/bellows)** (which communicates with EZSP/EmberZNet based radios) and **[zigpy-xbee](https://github.com/zigpy/zigpy-xbee)** (which communicates with XBee based Zigbee radios). There are also experimental radio libraries called **[zigpy-deconz](https://github.com/zigpy/zigpy-deconz)** and **[pyconz](https://github.com/Equidamoid/pyconz/)** available for deCONZ serial protocol (for communicating with ConBee and RaspBee USB and GPIO radios from Dresden-Elektronik).
+Zigbee stacks and hardware from many different hardware chip manufacturers are supported via radio libraries which translate their proprietary communication protocol into a common API which is shared among all radio libraries for zigpy. If some Zigbee stack or Zigbee Coordinator hardware for other manufacturers is not supported by yet zigpy it is possible for any independent developer to step-up and develop a new radio library for zigpy which translates its proprietary communication protocol into the common API that zigpy can understand.
 
-**Known working Zigbee radio modules:**
-- EmberZNet based radios using the EZSP protocol (via the [bellows](https://github.com/zigpy/bellows) library for zigpy)
-  - [Nortek GoControl QuickStick Combo Model HUSBZB-1 (Z-Wave & Zigbee USB Adapter)](https://www.nortekcontrol.com/products/2gig/husbzb-1-gocontrol-quickstick-combo/)
-  - [Elelabs Zigbee USB Adapter](https://elelabs.com/products/elelabs_usb_adapter.html)
-  - [Elelabs Zigbee Raspberry Pi Shield](https://elelabs.com/products/elelabs_zigbee_shield.html)
-- XBee Zigbee based radios (via the [zigpy-xbee](https://github.com/zigpy/zigpy-xbee) library for zigpy)
-  - Digi XBee Series 2C (S2C) modules
-  - Digi XBee Series 2 (S2) modules. Note: These will need to be manually flashed with the Zigbee Coordinator API firmware via XCTU.
-  - Digi XBee Series 3 (xbee3-24) modules
-- deCONZ based radios (via the [zigpy-deconz](https://github.com/zigpy/zigpy-deconz) library for zigpy)
-  - [ConBee II (a.k.a. ConBee 2) USB adapter from Dresden-Elektronik](https://shop.dresden-elektronik.de/conbee-2.html)
-  - [ConBee](https://www.dresden-elektronik.de/conbee/) USB adio adapter from [Dresden-Elektronik](https://www.dresden-elektronik.de)
-  - [RaspBee](https://www.dresden-elektronik.de/raspbee/) GPIO radio adapter from [Dresden-Elektronik](https://www.dresden-elektronik.de)
-  
-  **Related projects:**
-  ZHA deviation handling in Home Assistant relies on on the third-party [ZHA Device Handlers](https://github.com/dmulcahey/zha-device-handlers) project. Zigbee devices that deviate from or do not fully conform to the standard specifications set by the [Zigbee Alliance](https://www.zigbee.org) may require the development of custom [ZHA Device Handlers](https://github.com/dmulcahey/zha-device-handlers) (ZHA custom quirks handler implementation) to for all their functions to work properly with the ZHA component in Home Assistant. These ZHA Device Handlers for Home Assistant can thus be used to parse custom messages to and from non-compliant Zigbee devices. The custom quirks implementations for zigpy implemented as ZHA Device Handlers for Home Assistant are a similar concept to that of [Hub-connected Device Handlers for the SmartThings Classics platform](https://docs.smartthings.com/en/latest/device-type-developers-guide/) as well as that of [Zigbee-Shepherd Converters as used by Zigbee2mqtt](https://www.zigbee2mqtt.io/how_tos/how_to_support_new_devices.html), meaning they are each virtual representations of a physical device that expose additional functionality that is not provided out-of-the-box by the existing integration between these platforms.
+zigpy contains common code implementing ZCL (Zigbee Cluster Library) and ZDO (Zigbee Device Object) application state management which is being used by various radio libraries implementing the actual interface with the radio modules from different manufacturers. The separate radio libraries interface with radio hardware adapters/modules over USB and GPIO using different native UART serial protocols.
+
+The **[ZHA integration component for Home Assistant](https://www.home-assistant.io/integrations/zha/)**, the [Zigbee Plugin for Domoticz](https://www.domoticz.com/wiki/ZigbeeForDomoticz), and the [Zigbee Plugin for Jeedom](https://doc.jeedom.com/en_US/plugins/automation%20protocol/zigbee/) (competing open-source home automation software) are all using [zigpy libraries](https://github.com/zigpy/) as dependencies, as such they could be used as references of different implementations if looking to integrate a Zigbee solution into your application.
+
+### Zigbee device OTA updates
+
+zigpy has the ability to download and perform Zigbee OTAU (Over-The-Air Updates) of Zigbee device's firmware. The Zigbee OTA update firmware image files will need conform to standard Zigbee OTA format. Updates from a local OTA update directory also is also supported and can be used as an option for offline firmware updates if user provide correct Zigbee OTA formatted firmware files themselves.
+
+OTA provider code included by default in zigpy is currently only IKEA, Inovelli, LEDVANCE/OSRAM, SALUS/Computime, and SONOFF/ITEAD devices as those OTA providers have published source URLs online for public availability. Support for additional OTA providers for other manufacturers devices could be included with zigpy in the future, if device manufacturers publish their firmware images publicly and their developers contribute the needed download code to the zigpy project.
+
+Manufacturers can also without extra code distribute additional OTA providers as test feed URLs to users if there is no need to deploy OTA updates globally. Support for implementing such additional OTA providers can be done using the JSON format specified in zigpy wiki, see: 
+
+- https://github.com/zigpy/zigpy/wiki/OTA-Information-for-Manufacturers
+
+## How to install and test, report bugs, or contribute to this project
+
+For specific instructions on how-to install and test zigpy or contribute bug-reports and code to this project please see the guidelines in the CONTRIBUTING.md file:
+
+- [Guidelines in CONTRIBUTING.md](./CONTRIBUTING.md)
+
+This CONTRIBUTING.md file will contain information about using zigpy, testing new releases, troubleshooting and bug-reporting as, as well as library + code instructions for developers and more. This file also contain short summeries and links to other related projects that directly or indirectly depends in zigpy libraries.
+
+You can contribute to this project either as an end-user, a tester (advanced user contributing constructive issue/bug-reports) or as a developer contributing code.
+
+## Compatible Zigbee coordinator hardware
+
+Radio libraries for zigpy are separate projects with their own repositories and include **[bellows](https://github.com/zigpy/bellows)** (for communicating with Silicon Labs EmberZNet based radios), **[zigpy-deconz](https://github.com/zigpy/zigpy-deconz)** (for communicating with deCONZ based radios from Dresden Elektronik), and **[zigpy-xbee](https://github.com/zigpy/zigpy-xbee)** (for communicating with XBee based Zigbee radios), **[zigpy-zigate](https://github.com/zigpy/zigpy-zigate)** for communicating with ZiGate based radios, **[zigpy-znp](https://github.com/zha-ng/zigpy-znp)** or **[zigpy-cc](https://github.com/zigpy/zigpy-cc)** for communicating with Texas Instruments based radios that have Z-Stack ZNP coordinator firmware.
+
+Note! Zigbee 3.0 support or not in zigpy depends primarily on your Zigbee coordinator hardware and its firmware. Some Zigbee coordinator hardware support Zigbee 3.0 but might be shipped with an older firmware which does not, in which case may want to upgrade the firmware manually yourself. Some other Zigbee coordinator hardware may not support a firmware that is capable of Zigbee 3.0 at all but can still be fully functional and feature complete for your needs, (this is very common as many if not most Zigbee devices do not yet Zigbee 3.0 or are backwards-compable with a Zigbee profile that is support by your Zigbee coordinator hardware and its firmware). As a general rule, newer Zigbee coordinator hardware released can normally support Zigbee 3.0 firmware and it is up to its manufacturer to make such firmware available for them.
+
+### Compatible zigpy radio libraries
+
+- **Digi XBee** based Zigbee radios via the [zigpy-xbee](https://github.com/zigpy/zigpy-xbee) library for zigpy.
+- **dresden elektronik** deCONZ based Zigbee radios via the [zigpy-deconz](https://github.com/zigpy/zigpy-deconz) library for zigpy.
+- **Silicon Labs** (EmberZNet) based Zigbee radios using the EZSP protocol via the [bellows](https://github.com/zigpy/bellows) library for zigpy.
+- **Texas Instruments** based Zigbee radios with all compatible Z-Stack firmware via the [zigpy-znp](https://github.com/zha-ng/zigpy-znp) library for zigpy.
+- **ZiGate** based ZigBee radios via the [zigpy-zigate](https://github.com/zigpy/zigpy-zigate) library for zigpy.
+
+### Legacy or obsolete zigpy radio libraries
+
+- Texas Instruments with Z-Stack legacy firmware via the [zigpy-cc](https://github.com/zigpy/zigpy-cc) library for zigpy.
+
+## Release packages available via PyPI
+
+New packages of tagged versions are also released via the "zigpy" project on PyPI
+  - https://pypi.org/project/zigpy/
+    - https://pypi.org/project/zigpy/#history
+    - https://pypi.org/project/zigpy/#files
+
+Older packages of tagged versions are still available on the "zigpy-homeassistant" project on PyPI
+  - https://pypi.org/project/zigpy-homeassistant/
+
+Packages of tagged versions of the radio libraries are released via separate projects on PyPI
+- https://pypi.org/project/zigpy/
+  - https://pypi.org/project/bellows/
+  - https://pypi.org/project/zigpy-cc/
+  - https://pypi.org/project/zigpy-deconz/
+  - https://pypi.org/project/zigpy-xbee/
+  - https://pypi.org/project/zigpy-zigate/
+  - https://pypi.org/project/zigpy-znp/
